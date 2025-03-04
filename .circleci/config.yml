@@ -15,10 +15,6 @@ jobs:
     executor: "default"
     steps:
       - run:
-          name: "Inspect OIDC Token."
-          command: |
-            echo "${CIRCLE_OIDC_TOKEN}" | cut -d "." -f2 | base64 --decode | jq .
-      - run:
           name: "Debug OIDC Token"
           command: |
             if [ -n "${CIRCLE_OIDC_TOKEN}" ]; then
