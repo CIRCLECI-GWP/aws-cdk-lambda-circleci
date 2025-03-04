@@ -2,12 +2,14 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@5.2.0
+
 executors:
   default:
     docker:
       - image: "cimg/node:23.9.0"
     environment:
       AWS_REGION: "us-west-2"
+
 jobs:
   build:
     executor: "default"
@@ -15,26 +17,35 @@ jobs:
       - run:
           name: "Debug OIDC Token"
           command: |
-            curl -fsSL \
-            "https://oidc.circleci.com/org/${CIRCLE_OIDC_TOKEN}" | jq .
+            if [ -n "${CIRCLE_OIDC_TOKEN}" ]; then
+              echo "OIDC token exists."
+              echo "${CIRCLE_OIDC_TOKEN}" | cut -c1-50  # Print only the first 50 characters for debugging
+            else
+              echo "OIDC token is not available."
+            fi
+
       - aws-cli/setup:
           role_arn: "${AWS_ROLE_ARN}"
           role_session_name: "${AWS_ROLE_SESSION_NAME}"
+
       - checkout
+
       - run:
-          name: "install_lambda_packages."
+          name: "Install Lambda Packages"
           command: |
             cd lambda/authorizer && npm install
             cd ../../
             cd lambda/processJob && npm install
             cd ../../
+
       - run:
-          name: "build"
+          name: "Build Project"
           command: |
             npm install
             npm run build
+
       - run:
-          name: "cdk_diff"
+          name: "CDK Diff"
           command: |
             if [ -n "$CIRCLE_PULL_REQUEST" ]; then
               export ENV=stg
@@ -51,8 +62,9 @@ jobs:
                 -d "$data" \
                 "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${pr_number}/comments"
             fi
+
       - run:
-          name: "cdk_deploy"
+          name: "CDK Deploy"
           command: |
             if [ "${CIRCLE_BRANCH}" == "main" ]; then
               ENV=prd npm run ci_deploy
