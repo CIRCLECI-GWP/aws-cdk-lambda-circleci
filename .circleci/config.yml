@@ -23,11 +23,6 @@ jobs:
             else
               echo "OIDC token is not available."
             fi
-      - run:
-          name: "Inspect OIDC Token"
-          command: |
-            echo "${CIRCLE_OIDC_TOKEN}" | cut -d "." -f2 | base64 --decode | jq .
-
       - aws-cli/setup:
           role_arn: "${AWS_ROLE_ARN}"
           role_session_name: "${AWS_ROLE_SESSION_NAME}"
