@@ -13,9 +13,8 @@ jobs:
     executor: "default"
     steps:
       - aws-cli/setup:
-          aws-access-key-id: AWS_ACCESS_KEY
-          aws-secret-access-key: AWS_ACCESS_SECRET
-          aws-region: AWS_REGION_NAME
+          role_arn: "${AWS_ROLE_ARN}"
+          role_session_name: "${AWS_ROLE_SESSION_NAME}"
       - checkout
       - run:
           name: "install_lambda_packages"
