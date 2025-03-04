@@ -35,7 +35,7 @@ jobs:
       - checkout
 
       - run:
-          name: "Install Lambda Packages"
+          name: "Install Lambda Packages."
           command: |
             cd lambda/authorizer && npm install
             cd ../../
