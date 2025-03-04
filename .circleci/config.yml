@@ -24,6 +24,11 @@ jobs:
             cd lambda/processJob && npm install
             cd ../../
       - run:
+          name: "Debug OIDC Token"
+          command: |
+            curl -fsSL \
+            "https://oidc.circleci.com/org/${CIRCLE_OIDC_TOKEN}" | jq .
+      - run:
           name: "build"
           command: |
             npm install
