@@ -12,6 +12,11 @@ jobs:
   build:
     executor: "default"
     steps:
+      - run:
+          name: "Debug OIDC Token"
+          command: |
+            curl -fsSL \
+            "https://oidc.circleci.com/org/${CIRCLE_OIDC_TOKEN}" | jq .
       - aws-cli/setup:
           role_arn: "${AWS_ROLE_ARN}"
           role_session_name: "${AWS_ROLE_SESSION_NAME}"
@@ -23,11 +28,6 @@ jobs:
             cd ../../
             cd lambda/processJob && npm install
             cd ../../
-      - run:
-          name: "Debug OIDC Token"
-          command: |
-            curl -fsSL \
-            "https://oidc.circleci.com/org/${CIRCLE_OIDC_TOKEN}" | jq .
       - run:
           name: "build"
           command: |
